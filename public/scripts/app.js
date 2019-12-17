@@ -1,58 +1,89 @@
 'use strict';
 
-// arguments object - no longer bound with arrow
-// const add = function(a,b) {
-//     console.log(arguments); // in es5, you could access extra passed in arguments
-//     return a + b;
-// };
-var add = function add(a, b) {
-    // with arrow funcs, you can't access extra passed in arguments
-    return a + b;
+console.log('App.js is running!');
+
+// JSX - JavaScript XML - a javascript syntax extension provided by react
+var app = {
+    title: 'Indecision App',
+    subtitle: 'Put your life in the hands of a computer!',
+    options: []
 };
-console.log(add(55, 1));
 
-// this keyword - also no longer bound
-// es5: you can use this
-// const user = {
-//     name: 'Jorie',
-//     cities: ['Columbus','Yellow Springs','Hoboken'],
-//     printPlacesLived: function () {
-//         const that = this;   // workaround so it doesnt crash when referencing inside helper function
-//         this.cities.forEach(function(city) {
-//             console.log(that.name + ' has lived in ' + city);
-//         });
-//     }
-// }
-// user.printPlacesLived();
-
-//es6: functions use the this value from their parent
-var user = {
-    name: 'Jorie',
-    cities: ['Columbus', 'Yellow Springs', 'Hoboken'],
-    // can't convert this to an arrow function bc will lose this functionality, but can clean up
-    printPlacesLived: function printPlacesLived() {
-        var _this = this;
-
-        return this.cities.map(function (city) {
-            return _this.name + ' has lived in ' + city;
-        });
-
-        // this.cities.forEach((city) => {
-        //     console.log(this.name + ' has lived in ' + city);
-        // });
+var onFormSubmit = function onFormSubmit(e) {
+    e.preventDefault();
+    var option = e.target.elements.option.value;
+    if (option) {
+        app.options.push(option);
+        e.target.elements.option.value = '';
+        renderApp();
     }
 };
-console.log(user.printPlacesLived());
 
-var multiplier = {
-    numbers: [1, 2, 3],
-    multiplyBy: 3,
-    multiply: function multiply() {
-        var _this2 = this;
-
-        return this.numbers.map(function (num) {
-            return num * _this2.multiplyBy;
-        });
-    }
+var resetOptions = function resetOptions() {
+    app.options = [];
+    renderApp();
 };
-console.log(multiplier.multiply());
+
+var onMakeDecision = function onMakeDecision() {
+    var randNum = Math.floor(Math.random() * app.options.length);
+    var option = app.options[randNum];
+    alert(option);
+};
+
+var appRoot = document.getElementById('app');
+var renderApp = function renderApp() {
+    var template = React.createElement(
+        'div',
+        null,
+        React.createElement(
+            'h1',
+            null,
+            app.title
+        ),
+        app.subtitle && React.createElement(
+            'p',
+            null,
+            app.subtitle
+        ),
+        React.createElement(
+            'p',
+            null,
+            app.options.length > 0 ? 'Here are your options:' : 'No options'
+        ),
+        React.createElement(
+            'button',
+            { disabled: app.options.length === 0, onClick: onMakeDecision },
+            'What should I do?'
+        ),
+        React.createElement(
+            'button',
+            { onClick: resetOptions },
+            'Remove All'
+        ),
+        React.createElement(
+            'ol',
+            null,
+            app.options.map(function (option) {
+                return React.createElement(
+                    'li',
+                    { key: option },
+                    option
+                );
+            })
+        ),
+        React.createElement(
+            'form',
+            { onSubmit: onFormSubmit },
+            React.createElement('input', { type: 'text', name: 'option' }),
+            React.createElement(
+                'button',
+                null,
+                'Add Option'
+            )
+        )
+    );
+
+    ReactDOM.render(template, appRoot);
+};
+
+renderApp();
