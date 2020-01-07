@@ -62,3 +62,4 @@ class Counter extends React.Component {
 ReactDOM.render(<Counter count={1}/>, document.getElementById('app'));
 
 console.log("commit 1");
+console.log("commit 2");
